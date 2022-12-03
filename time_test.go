@@ -7,100 +7,82 @@ import (
 	"testing"
 
 	"github.com/boundedinfinity/rfc3339date"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v3"
 )
 
-func TestTime(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "RFC3339 Time Suite")
+func Test_Time_Parse(t *testing.T) {
+	input := TEST_TIME
+	expected := testTime()
+	actual, err := rfc3339date.ParseTime(input)
+
+	assert.Nil(t, err)
+	compareTime(t, actual, expected)
 }
 
-var _ = Describe("RFC3339 Time", func() {
-	Context("parse", func() {
-		It("should parse time", func() {
-			input := TEST_TIME
-			expected := testTime()
-			actual, err := rfc3339date.ParseTime(input)
+func Test_Time_String(t *testing.T) {
+	actual := testTime().String()
+	expected := TEST_TIME
 
-			Expect(err).To(BeNil())
-			compareTime(actual, expected)
-		})
-	})
+	assert.Equal(t, actual, expected)
+}
 
-	Context("string", func() {
-		It("should create string", func() {
-			actual := testTime().String()
-			expected := TEST_TIME
+func Test_Time_Unmarshal_Json(t *testing.T) {
+	input := fmt.Sprintf(`"%v"`, TEST_TIME)
+	expected := testTime()
+	var actual rfc3339date.Rfc3339Time
+	err := json.Unmarshal([]byte(input), &actual)
 
-			Expect(actual).To(Equal(expected))
-		})
-	})
+	assert.Nil(t, err)
+	compareTime(t, actual, expected)
+}
 
-	Context("json", func() {
-		It("should unmarshal time", func() {
-			input := fmt.Sprintf(`"%v"`, TEST_TIME)
-			expected := testTime()
-			var actual rfc3339date.Rfc3339Time
-			err := json.Unmarshal([]byte(input), &actual)
+func Test_Time_Marshal_Json(t *testing.T) {
+	input := testTime()
+	expected := fmt.Sprintf(`"%v"`, TEST_TIME)
+	bs, err := json.Marshal(input)
+	actual := string(bs)
 
-			Expect(err).To(BeNil())
-			compareTime(actual, expected)
-		})
+	assert.Nil(t, err)
+	assert.Equal(t, expected, actual)
+}
 
-		It("should marshal time", func() {
-			input := testTime()
-			expected := fmt.Sprintf(`"%v"`, TEST_TIME)
-			bs, err := json.Marshal(input)
-			actual := string(bs)
+func Test_Time_Unmarshal_Xml(t *testing.T) {
+	input := fmt.Sprintf(`<Rfc3339Time>%v</Rfc3339Time>`, TEST_TIME)
+	expected := testTime()
+	var actual rfc3339date.Rfc3339Time
+	err := xml.Unmarshal([]byte(input), &actual)
 
-			Expect(err).To(BeNil())
-			Expect(actual).To(Equal(expected))
-		})
-	})
+	assert.Nil(t, err)
+	compareTime(t, actual, expected)
+}
 
-	Context("xml", func() {
-		It("should unmarshal date", func() {
-			input := fmt.Sprintf(`<Rfc3339Time>%v</Rfc3339Time>`, TEST_TIME)
-			expected := testTime()
-			var actual rfc3339date.Rfc3339Time
-			err := xml.Unmarshal([]byte(input), &actual)
+func Test_Time_Marshal_Xml(t *testing.T) {
+	input := testTime()
+	expected := fmt.Sprintf(`<Rfc3339Time>%v</Rfc3339Time>`, TEST_TIME)
+	bs, err := xml.Marshal(input)
+	actual := string(bs)
 
-			Expect(err).To(BeNil())
-			compareTime(actual, expected)
-		})
+	assert.Nil(t, err)
+	assert.Equal(t, expected, actual)
+}
 
-		It("should marshal date", func() {
-			input := testTime()
-			expected := fmt.Sprintf(`<Rfc3339Time>%v</Rfc3339Time>`, TEST_TIME)
-			bs, err := xml.Marshal(input)
-			actual := string(bs)
+func Test_Time_Unmarshal_Yaml(t *testing.T) {
+	input := fmt.Sprintf(`%v`, TEST_TIME)
+	expected := testTime()
+	var actual rfc3339date.Rfc3339Time
+	err := yaml.Unmarshal([]byte(input), &actual)
 
-			Expect(err).To(BeNil())
-			Expect(actual).To(Equal(expected))
-		})
-	})
+	assert.Nil(t, err)
+	compareTime(t, actual, expected)
+}
 
-	Context("yaml", func() {
-		It("should unmarshal date", func() {
-			input := fmt.Sprintf(`%v`, TEST_TIME)
-			expected := testTime()
-			var actual rfc3339date.Rfc3339Time
-			err := yaml.Unmarshal([]byte(input), &actual)
+func Test_Time_Marshal_Yaml(t *testing.T) {
+	input := testTime()
+	expected := fmt.Sprintf("\"%v\"\n", TEST_TIME)
+	bs, err := yaml.Marshal(input)
+	actual := string(bs)
 
-			Expect(err).To(BeNil())
-			compareTime(actual, expected)
-		})
-
-		It("should marshal date", func() {
-			input := testTime()
-			expected := fmt.Sprintf("\"%v\"\n", TEST_TIME)
-			bs, err := yaml.Marshal(input)
-			actual := string(bs)
-
-			Expect(err).To(BeNil())
-			Expect(actual).To(Equal(expected))
-		})
-	})
-})
+	assert.Nil(t, err)
+	assert.Equal(t, expected, actual)
+}

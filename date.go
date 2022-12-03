@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/boundedinfinity/rfc3339date/internal"
 	"gopkg.in/yaml.v3"
 )
 
@@ -14,7 +15,15 @@ type Rfc3339Date struct {
 }
 
 func (t Rfc3339Date) String() string {
-	return t.Format(_FORMAT_DATE)
+	return t.Format(internal.FORMAT_DATE)
+}
+
+func (t Rfc3339Date) After(v Rfc3339Date) bool {
+	return t.Time.After(v.Time)
+}
+
+func (t Rfc3339Date) Before(v Rfc3339Date) bool {
+	return t.Time.Before(v.Time)
 }
 
 func NewDate(d time.Time) Rfc3339Date {
@@ -23,8 +32,8 @@ func NewDate(d time.Time) Rfc3339Date {
 }
 
 func ParseDate(s string) (Rfc3339Date, error) {
-	s2 := fmt.Sprintf("%v%v", s, _FAKE_TIME)
-	d, err := time.Parse(_FORMAT_DATETIME, s2)
+	s2 := fmt.Sprintf("%v%v", s, internal.FAKE_TIME)
+	d, err := time.Parse(internal.FORMAT_DATETIME, s2)
 
 	if err != nil {
 		return Rfc3339Date{}, err

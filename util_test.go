@@ -1,10 +1,11 @@
 package rfc3339date_test
 
 import (
+	"testing"
 	"time"
 
 	"github.com/boundedinfinity/rfc3339date"
-	. "github.com/onsi/gomega"
+	"github.com/stretchr/testify/assert"
 )
 
 const (
@@ -43,24 +44,24 @@ func testDateTime() rfc3339date.Rfc3339DateTime {
 	return rfc3339date.NewDateTime(d)
 }
 
-func compareDate(a, e rfc3339date.Rfc3339Date) {
-	Expect(a.Year()).WithOffset(1).To(Equal(e.Year()))
-	Expect(a.Month()).WithOffset(2).To(Equal(e.Month()))
-	Expect(a.Day()).WithOffset(3).To(Equal(e.Day()))
+func compareDate(t *testing.T, a, e rfc3339date.Rfc3339Date) {
+	assert.Equal(t, e.Year(), a.Year())
+	assert.Equal(t, e.Month(), a.Month())
+	assert.Equal(t, e.Day(), a.Day())
 }
 
-func compareDateTime(a, e rfc3339date.Rfc3339DateTime) {
-	Expect(a.Year()).WithOffset(1).To(Equal(e.Year()))
-	Expect(a.Month()).WithOffset(2).To(Equal(e.Month()))
-	Expect(a.Day()).WithOffset(3).To(Equal(e.Day()))
+func compareDateTime(t *testing.T, a, e rfc3339date.Rfc3339DateTime) {
+	assert.Equal(t, e.Year(), a.Year())
+	assert.Equal(t, e.Month(), a.Month())
+	assert.Equal(t, e.Day(), a.Day())
 
-	Expect(a.Hour()).WithOffset(4).To(Equal(e.Hour()))
-	Expect(a.Minute()).WithOffset(5).To(Equal(e.Minute()))
-	Expect(a.Second()).WithOffset(6).To(Equal(e.Second()))
+	assert.Equal(t, e.Hour(), a.Hour())
+	assert.Equal(t, e.Minute(), a.Minute())
+	assert.Equal(t, e.Second(), a.Second())
 }
 
-func compareTime(a, e rfc3339date.Rfc3339Time) {
-	Expect(a.Hour()).WithOffset(4).To(Equal(e.Hour()))
-	Expect(a.Minute()).WithOffset(5).To(Equal(e.Minute()))
-	Expect(a.Second()).WithOffset(6).To(Equal(e.Second()))
+func compareTime(t *testing.T, a, e rfc3339date.Rfc3339Time) {
+	assert.Equal(t, e.Hour(), a.Hour())
+	assert.Equal(t, e.Minute(), a.Minute())
+	assert.Equal(t, e.Second(), a.Second())
 }

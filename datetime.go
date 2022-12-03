@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"time"
 
+	"github.com/boundedinfinity/rfc3339date/internal"
 	"gopkg.in/yaml.v3"
 )
 
@@ -13,7 +14,15 @@ type Rfc3339DateTime struct {
 }
 
 func (t Rfc3339DateTime) String() string {
-	return t.Format(_FORMAT_DATETIME)
+	return t.Format(internal.FORMAT_DATETIME)
+}
+
+func (t Rfc3339DateTime) After(v Rfc3339DateTime) bool {
+	return t.Time.After(v.Time)
+}
+
+func (t Rfc3339DateTime) Before(v Rfc3339DateTime) bool {
+	return t.Time.Before(v.Time)
 }
 
 func ZeroDateTime() Rfc3339DateTime {
@@ -26,7 +35,7 @@ func NewDateTime(d time.Time) Rfc3339DateTime {
 }
 
 func ParseDateTime(s string) (Rfc3339DateTime, error) {
-	v, err := time.Parse(_FORMAT_DATETIME, s)
+	v, err := time.Parse(internal.FORMAT_DATETIME, s)
 
 	if err != nil {
 		return Rfc3339DateTime{}, err
