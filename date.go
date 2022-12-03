@@ -26,6 +26,16 @@ func (t Rfc3339Date) Before(v Rfc3339Date) bool {
 	return t.Time.Before(v.Time)
 }
 
+func (t Rfc3339Date) Ahead(v Rfc3339Duration) bool {
+	x := time.Now().Add(v.Duration)
+	return NewDate(x).Before(t)
+}
+
+func (t Rfc3339Date) Begin(v Rfc3339Duration) bool {
+	x := time.Now().Add(-v.Duration)
+	return NewDate(x).After(t)
+}
+
 func NewDate(d time.Time) Rfc3339Date {
 	d2 := time.Date(d.Year(), d.Month(), d.Day(), 0, 0, 0, 0, time.UTC)
 	return Rfc3339Date{d2}
