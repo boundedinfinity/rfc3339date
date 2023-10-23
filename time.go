@@ -8,8 +8,19 @@ import (
 	"github.com/boundedinfinity/rfc3339date/internal"
 )
 
+var ZeroTime Rfc3339Time
+
+func init() {
+	var zero time.Time
+	ZeroTime = NewTime(zero)
+}
+
 type Rfc3339Time struct {
 	time.Time
+}
+
+func (t Rfc3339Time) IsZero() bool {
+	return t == ZeroTime
 }
 
 func (t Rfc3339Time) String() string {

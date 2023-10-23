@@ -7,8 +7,19 @@ import (
 	"github.com/boundedinfinity/rfc3339date/internal"
 )
 
+var ZeroDate Rfc3339Date
+
+func init() {
+	var zero time.Time
+	ZeroDate = NewDate(zero)
+}
+
 type Rfc3339Date struct {
 	time.Time
+}
+
+func (t Rfc3339Date) IsZero() bool {
+	return t == ZeroDate
 }
 
 func (t Rfc3339Date) String() string {

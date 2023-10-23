@@ -6,8 +6,19 @@ import (
 	"github.com/boundedinfinity/rfc3339date/internal"
 )
 
+var ZeroDateTime Rfc3339DateTime
+
+func init() {
+	var zero time.Time
+	ZeroDateTime = NewDateTime(zero)
+}
+
 type Rfc3339DateTime struct {
 	time.Time
+}
+
+func (t Rfc3339DateTime) IsZero() bool {
+	return t == ZeroDateTime
 }
 
 func (t Rfc3339DateTime) String() string {
@@ -20,11 +31,6 @@ func (t Rfc3339DateTime) After(v Rfc3339DateTime) bool {
 
 func (t Rfc3339DateTime) Before(v Rfc3339DateTime) bool {
 	return t.Time.Before(v.Time)
-}
-
-func ZeroDateTime() Rfc3339DateTime {
-	var zero time.Time
-	return NewDateTime(zero)
 }
 
 func NewDateTime(d time.Time) Rfc3339DateTime {
