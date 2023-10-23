@@ -37,6 +37,10 @@ func NewDateTime(d time.Time) Rfc3339DateTime {
 	return Rfc3339DateTime{d}
 }
 
+func DateTimeNow() Rfc3339DateTime {
+	return NewDateTime(time.Now())
+}
+
 func ParseDateTime(s string) (Rfc3339DateTime, error) {
 	v, err := time.Parse(internal.FORMAT_DATETIME, s)
 

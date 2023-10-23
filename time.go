@@ -39,6 +39,10 @@ func NewTime(d time.Time) Rfc3339Time {
 	return Rfc3339Time{d}
 }
 
+func TimeNow() Rfc3339Time {
+	return NewTime(time.Now())
+}
+
 func ParseTime(s string) (Rfc3339Time, error) {
 	s2 := fmt.Sprintf("%v%v%v", internal.FAKE_DATE1, s, internal.FAKE_DATE2)
 	d, err := time.Parse(internal.FORMAT_DATETIME, s2)
