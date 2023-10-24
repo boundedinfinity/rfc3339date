@@ -52,7 +52,41 @@ func Test_DateTime_Marshal_Json(t *testing.T) {
 			actual := string(bs)
 
 			assert.Nil(t, err, tc.name)
-			assert.Equal(t, tc.expected, actual, tc.name)
+			assert.JSONEq(t, tc.expected, actual, tc.name)
+		})
+	}
+}
+
+func Test_DateTime_Marshal_Json_Embedded(t *testing.T) {
+	type embedded struct {
+		X rfc3339date.Rfc3339DateTime `json:"x,omitempty"`
+	}
+
+	testCases := []struct {
+		name     string
+		input    embedded
+		expected string
+		err      error
+	}{
+		{
+			name:     "non-zero date",
+			input:    embedded{testDateTime()},
+			expected: fmt.Sprintf(`{"x":"%v"}`, TEST_DATETIME),
+		},
+		{
+			name:     "zero date",
+			input:    embedded{rfc3339date.ZeroDateTime},
+			expected: `{"x": null}`,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(tt *testing.T) {
+			bs, err := json.Marshal(tc.input)
+			actual := string(bs)
+
+			assert.Nil(t, err, tc.name)
+			assert.JSONEq(t, tc.expected, actual, tc.name)
 		})
 	}
 }
