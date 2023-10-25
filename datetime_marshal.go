@@ -7,22 +7,16 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func (t Rfc3339DateTime) MarshalJSON() ([]byte, error) {
-	var bs []byte
-	var err error
-
-	if t == ZeroDateTime {
-		bs, err = json.Marshal(nil)
-	} else {
-		bs, err = json.Marshal(t.String())
-	}
-
-	return bs, err
-}
-
-func (t *Rfc3339DateTime) unmarshalJSON(s string) error {
+func (t *Rfc3339DateTime) unmarshalDateTime(fn func(*string) error) error {
+	var s string
 	var v Rfc3339DateTime
 	var err error
+
+	err = fn(&s)
+
+	if err != nil {
+		return err
+	}
 
 	if s == "" {
 		v = NewDateTime(ZeroDateTime.Time)
@@ -39,14 +33,23 @@ func (t *Rfc3339DateTime) unmarshalJSON(s string) error {
 	return nil
 }
 
-func (t *Rfc3339DateTime) UnmarshalJSON(data []byte) error {
-	var s string
+func (t Rfc3339DateTime) MarshalJSON() ([]byte, error) {
+	var bs []byte
+	var err error
 
-	if err := json.Unmarshal(data, &s); err != nil {
-		return err
+	if t == ZeroDateTime {
+		bs, err = json.Marshal(nil)
+	} else {
+		bs, err = json.Marshal(t.String())
 	}
 
-	return t.unmarshalJSON(s)
+	return bs, err
+}
+
+func (t *Rfc3339DateTime) UnmarshalJSON(data []byte) error {
+	return t.unmarshalDateTime(func(ptr *string) error {
+		return json.Unmarshal(data, ptr)
+	})
 }
 
 func (t Rfc3339DateTime) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
@@ -58,13 +61,9 @@ func (t Rfc3339DateTime) MarshalXML(e *xml.Encoder, start xml.StartElement) erro
 }
 
 func (t *Rfc3339DateTime) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	var s string
-
-	if err := d.DecodeElement(&s, &start); err != nil {
-		return err
-	}
-
-	return t.unmarshalJSON(s)
+	return t.unmarshalDateTime(func(ptr *string) error {
+		return d.DecodeElement(ptr, &start)
+	})
 }
 
 func (t Rfc3339DateTime) MarshalYAML() (interface{}, error) {
@@ -76,11 +75,7 @@ func (t Rfc3339DateTime) MarshalYAML() (interface{}, error) {
 }
 
 func (t *Rfc3339DateTime) UnmarshalYAML(value *yaml.Node) error {
-	var s string
-
-	if err := value.Decode(&s); err != nil {
-		return err
-	}
-
-	return t.unmarshalJSON(s)
+	return t.unmarshalDateTime(func(ptr *string) error {
+		return value.Decode(ptr)
+	})
 }
