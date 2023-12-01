@@ -1,6 +1,7 @@
 package rfc3339date
 
 import (
+	"database/sql/driver"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
@@ -36,40 +37,27 @@ func (t Rfc3339Date) Begin(v Rfc3339Duration) bool {
 	return NewDate(x).After(t)
 }
 
+func (t Rfc3339Date) Within(v Rfc3339Duration) bool {
+	half := v.Duration / 2
+	before := time.Now().Add(half)
+	after := time.Now().Add(-half)
+	return NewDate(before).After(t) && NewDate(after).After(t)
+}
+
 func NewDate(d time.Time) Rfc3339Date {
-	d2 := time.Date(d.Year(), d.Month(), d.Day(), 0, 0, 0, 0, time.UTC)
+	year := d.Year()
+	month := d.Month()
+	day := d.Day()
+	d2 := time.Date(year, month, day, 0, 0, 0, 0, time.UTC)
 	return Rfc3339Date{d2}
 }
 
-func ParseDate(s string) (Rfc3339Date, error) {
-	s2 := fmt.Sprintf("%v%v", s, internal.FAKE_TIME)
-	d, err := time.Parse(internal.FORMAT_DATETIME, s2)
+// /////////////////////////////////////////////////////////////////
+//  unmarshal implemenation
+// /////////////////////////////////////////////////////////////////
 
-	if err != nil {
-		return Rfc3339Date{}, err
-	}
-
-	return NewDate(d), nil
-}
-
-func (t Rfc3339Date) MarshalJSON() ([]byte, error) {
-	bs, err := json.Marshal(t.String())
-
-	if err != nil {
-		return nil, err
-	}
-
-	return bs, nil
-}
-
-func (t *Rfc3339Date) UnmarshalJSON(data []byte) error {
-	var s string
-
-	if err := json.Unmarshal(data, &s); err != nil {
-		return err
-	}
-
-	v, err := ParseDate(s)
+func (t *Rfc3339Date) unmarshal(s string) error {
+	v, err := Dates.Parse(s)
 
 	if err != nil {
 		return err
@@ -79,6 +67,28 @@ func (t *Rfc3339Date) UnmarshalJSON(data []byte) error {
 
 	return nil
 }
+
+// /////////////////////////////////////////////////////////////////
+//  JSON marshal/unmarshal implemenation
+// /////////////////////////////////////////////////////////////////
+
+func (t Rfc3339Date) MarshalJSON() ([]byte, error) {
+	return json.Marshal(t.String())
+}
+
+func (t *Rfc3339Date) UnmarshalJSON(data []byte) error {
+	var s string
+
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+
+	return t.unmarshal(s)
+}
+
+// /////////////////////////////////////////////////////////////////
+//  XML marshal/unmarshal implemenation
+// /////////////////////////////////////////////////////////////////
 
 func (t Rfc3339Date) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	return e.EncodeElement(t.String(), start)
@@ -91,16 +101,12 @@ func (t *Rfc3339Date) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 		return err
 	}
 
-	v, err := ParseDate(s)
-
-	if err != nil {
-		return err
-	}
-
-	*t = v
-
-	return nil
+	return t.unmarshal(s)
 }
+
+// /////////////////////////////////////////////////////////////////
+//  YAML marshal/unmarshal implemenation
+// /////////////////////////////////////////////////////////////////
 
 func (t Rfc3339Date) MarshalYAML() (interface{}, error) {
 	return t.String(), nil
@@ -113,13 +119,29 @@ func (t *Rfc3339Date) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	v, err := ParseDate(s)
+	return t.unmarshal(s)
+}
+
+// /////////////////////////////////////////////////////////////////
+//  SQL marshal/unmarshal implementation
+// /////////////////////////////////////////////////////////////////
+
+func (t Rfc3339Date) Value() (driver.Value, error) {
+	return t.Date, nil
+}
+
+func (t *Rfc3339Date) Scan(value interface{}) error {
+	dv, err := driver.String.ConvertValue(value)
 
 	if err != nil {
 		return err
 	}
 
-	*t = v
+	s, ok := dv.(string)
 
-	return nil
+	if !ok {
+		return fmt.Errorf("not a string")
+	}
+
+	return t.unmarshal(s)
 }

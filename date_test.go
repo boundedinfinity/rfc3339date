@@ -14,7 +14,7 @@ import (
 func Test_Date_Parse(t *testing.T) {
 	input := TEST_DATE
 	expected := testDate()
-	actual, err := rfc3339date.ParseDate(input)
+	actual, err := rfc3339date.Dates.Parse(input)
 
 	assert.Nil(t, err)
 	compareDate(t, actual, expected)

@@ -14,7 +14,7 @@ import (
 func Test_Time_Parse(t *testing.T) {
 	input := TEST_TIME
 	expected := testTime()
-	actual, err := rfc3339date.ParseTime(input)
+	actual, err := rfc3339date.Times.Parse(input)
 
 	assert.Nil(t, err)
 	compareTime(t, actual, expected)
