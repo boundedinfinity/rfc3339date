@@ -1,4 +1,6 @@
-makefile_dir		:= $(abspath $(shell pwd))
+makefile_dir	:= $(abspath $(shell pwd))
+m				?= "updates"
+b				?= "master"
 
 .PHONY: list purge build install generate test commit tag publish
 
@@ -32,5 +34,5 @@ tag:
 
 publish: generate
 	@if ack replace go.mod ;then echo 'Remove the "replace" line from the go.mod file'; exit 1; fi
-	make commit m=$(m)
-	make tag tag=$(m)
+	@make commit m=$(m)
+	@make tag tag=$(m)
