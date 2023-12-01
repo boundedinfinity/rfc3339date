@@ -8,7 +8,14 @@ import (
 
 var DateTimes = dateTimes{}
 
-type dateTimes struct{}
+func init() {
+	var zero time.Time
+	DateTimes.Zero = NewDateTime(zero)
+}
+
+type dateTimes struct {
+	Zero Rfc3339DateTime
+}
 
 func (t dateTimes) Native(d time.Time) Rfc3339DateTime {
 	return NewDateTime(d)
@@ -18,9 +25,8 @@ func (t dateTimes) Now() Rfc3339DateTime {
 	return NewDateTime(time.Now())
 }
 
-func (t dateTimes) Zero() Rfc3339DateTime {
-	var zero time.Time
-	return NewDateTime(zero)
+func (t dateTimes) IsZero(d Rfc3339DateTime) bool {
+	return d == DateTimes.Zero
 }
 
 func (t dateTimes) Parse(s string) (Rfc3339DateTime, error) {

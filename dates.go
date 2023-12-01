@@ -9,7 +9,14 @@ import (
 
 var Dates = dates{}
 
-type dates struct{}
+func init() {
+	var zero time.Time
+	Dates.Zero = NewDate(zero)
+}
+
+type dates struct {
+	Zero Rfc3339Date
+}
 
 func (t dates) Native(d time.Time) Rfc3339Date {
 	return NewDate(d)
@@ -19,9 +26,8 @@ func (t dates) Now() Rfc3339Date {
 	return NewDate(time.Now())
 }
 
-func (t dates) Zero() Rfc3339Date {
-	var zero time.Time
-	return NewDate(zero)
+func (t dates) IsZero(d Rfc3339Date) bool {
+	return d == Dates.Zero
 }
 
 func (t dates) Parse(s string) (Rfc3339Date, error) {

@@ -7,9 +7,16 @@ import (
 	"github.com/boundedinfinity/rfc3339date/internal"
 )
 
+func init() {
+	var zero time.Time
+	Times.Zero = NewTime(zero)
+}
+
 var Times = times{}
 
-type times struct{}
+type times struct {
+	Zero Rfc3339Time
+}
 
 func (t times) Native(d time.Time) Rfc3339Time {
 	return NewTime(d)
@@ -19,9 +26,8 @@ func (t times) Now() Rfc3339Time {
 	return NewTime(time.Now())
 }
 
-func (t times) Zero() Rfc3339Time {
-	var zero time.Time
-	return NewTime(zero)
+func (t times) IsZero(d Rfc3339Time) bool {
+	return d == Times.Zero
 }
 
 func (t times) Parse(s string) (Rfc3339Time, error) {
