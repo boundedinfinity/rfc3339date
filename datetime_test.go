@@ -41,7 +41,7 @@ func Test_DateTime_Marshal_Json(t *testing.T) {
 		},
 		{
 			name:     "zero date",
-			input:    rfc3339date.ZeroDateTime,
+			input:    rfc3339date.DateTimes.Zero,
 			expected: "null",
 		},
 	}
@@ -75,7 +75,7 @@ func Test_DateTime_Marshal_Json_Embedded(t *testing.T) {
 		},
 		{
 			name:     "zero date",
-			input:    embedded{rfc3339date.ZeroDateTime},
+			input:    embedded{rfc3339date.DateTimes.Zero},
 			expected: `{"x": null}`,
 		},
 	}
@@ -106,7 +106,7 @@ func Test_DateTime_Unmarshal_Json(t *testing.T) {
 		{
 			name:     "zero date",
 			input:    "null",
-			expected: rfc3339date.ZeroDateTime,
+			expected: rfc3339date.DateTimes.Zero,
 		},
 	}
 
@@ -135,7 +135,7 @@ func Test_DateTime_Marshal_Xml(t *testing.T) {
 		},
 		{
 			name:     "zero date",
-			input:    rfc3339date.ZeroDateTime,
+			input:    rfc3339date.DateTimes.Zero,
 			expected: "<Rfc3339DateTime></Rfc3339DateTime>",
 		},
 	}
@@ -166,7 +166,7 @@ func Test_DateTime_Unmarshal_Xml(t *testing.T) {
 		{
 			name:     "zero date",
 			input:    `<Rfc3339DateTime></Rfc3339DateTime>`,
-			expected: rfc3339date.ZeroDateTime,
+			expected: rfc3339date.DateTimes.Zero,
 		},
 	}
 
@@ -195,7 +195,7 @@ func Test_DateTime_Marshal_Yaml(t *testing.T) {
 		},
 		{
 			name:     "zero date",
-			input:    rfc3339date.ZeroDateTime,
+			input:    rfc3339date.DateTimes.Zero,
 			expected: "null\n",
 		},
 	}
@@ -226,7 +226,7 @@ func Test_DateTime_Unmarshal_Yaml(t *testing.T) {
 		{
 			name:     "zero date",
 			input:    "null",
-			expected: rfc3339date.ZeroDateTime,
+			expected: rfc3339date.DateTimes.Zero,
 		},
 	}
 
